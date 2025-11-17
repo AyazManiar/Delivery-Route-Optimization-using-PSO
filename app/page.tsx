@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Moon, Sun, Map, Layers, Download, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Moon, Sun, Map, Layers, Download, ChevronLeft, ChevronRight, Menu, X } from 'lucide-react';
 import { PSOEngine, Point, PSOConfig } from '@/lib/pso-engine';
 import { CanvasVisualization } from '@/components/CanvasVisualization';
 import { ControlPanel } from '@/components/ControlPanel';
@@ -25,6 +25,18 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState<TabMode>('controls');
   const [leftPanelWidth, setLeftPanelWidth] = useState(30); // percentage
   const [isResizing, setIsResizing] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect mobile on mount
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // PSO State
   const [points, setPoints] = useState<Point[]>([]);
@@ -95,6 +107,9 @@ export default function Home() {
       alert('Please generate points first!');
       return;
     }
+
+    // Close mobile menu when starting optimization
+    setMobileMenuOpen(false);
 
     if (isPaused) {
       setIsPaused(false);
@@ -252,30 +267,40 @@ export default function Home() {
   return (
     <div className="h-screen w-screen overflow-hidden bg-gray-50 dark:bg-gray-900 transition-colors">
       {/* Header */}
-      <header className="h-16 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 flex items-center justify-between shadow-sm">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-            <Layers className="text-white" size={24} />
+      <header className="h-16 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-3 md:px-6 flex items-center justify-between shadow-sm">
+        <div className="flex items-center gap-2 md:gap-3">
+          <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+            <Layers className="text-white" size={20} />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-gray-800 dark:text-gray-100">RoutePSO</h1>
-            <p className="text-xs text-gray-500 dark:text-gray-400">Dynamic Delivery Route Optimization</p>
+            <h1 className="text-base md:text-xl font-bold text-gray-800 dark:text-gray-100">RoutePSO</h1>
+            <p className="hidden sm:block text-xs text-gray-500 dark:text-gray-400">Dynamic Delivery Route Optimization</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
-          {/* Export Button */}
+        <div className="flex items-center gap-2 md:gap-3">
+          {/* Mobile Menu Toggle */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="lg:hidden p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+            aria-label="Toggle menu"
+          >
+            {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
+
+          {/* Export Button - Icon only on mobile */}
           <button
             onClick={exportRoute}
             disabled={globalBest.length === 0}
-            className="px-4 py-2 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-lg transition-colors flex items-center gap-2"
+            className="p-2 md:px-4 md:py-2 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-lg transition-colors flex items-center gap-2"
+            title="Export Route"
           >
             <Download size={18} />
-            Export Route
+            <span className="hidden md:inline">Export Route</span>
           </button>
 
-          {/* View Toggle */}
-          <div className="flex items-center bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+          {/* View Toggle - Hidden on mobile */}
+          <div className="hidden lg:flex items-center bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
             <button
               onClick={() => setViewMode('canvas')}
               className={`px-3 py-2 rounded-md transition-colors flex items-center gap-2 ${
@@ -304,6 +329,7 @@ export default function Home() {
           <button
             onClick={() => setDarkMode(!darkMode)}
             className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+            aria-label="Toggle dark mode"
           >
             {darkMode ? <Sun className="text-yellow-400" size={20} /> : <Moon className="text-gray-600" size={20} />}
           </button>
@@ -311,12 +337,46 @@ export default function Home() {
       </header>
 
       {/* Main Content */}
-      <div className="flex h-[calc(100vh-4rem)]">
-        {/* Left Panel */}
+      <div className="flex flex-col lg:flex-row h-[calc(100vh-4rem)]">
+        {/* Mobile Menu Overlay */}
+        {mobileMenuOpen && (
+          <div
+            className="fixed inset-0 bg-black/50 z-[1000] lg:hidden"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+        )}
+
+        {/* Left Panel - Drawer on mobile, sidebar on desktop */}
         <div
-          className="bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col shadow-lg"
-          style={{ width: `${leftPanelWidth}%` }}
+          className={`fixed lg:relative z-[1001] lg:z-0 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col shadow-lg transition-transform duration-300 inset-y-0 left-0 ${
+            mobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+          }`}
+          style={{ 
+            width: isMobile ? '85vw' : `${leftPanelWidth}%`, 
+            maxWidth: isMobile ? '400px' : 'none'
+          }}
         >
+          {/* Mobile View Mode Toggle */}
+          <div className="lg:hidden flex bg-gray-100 dark:bg-gray-700 p-2 gap-2 border-b border-gray-200 dark:border-gray-600">
+            <button
+              onClick={() => setViewMode('canvas')}
+              className={`flex-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                viewMode === 'canvas' ? 'bg-blue-500 text-white' : 'bg-white dark:bg-gray-600 text-gray-700 dark:text-gray-200'
+              }`}
+            >
+              Canvas
+            </button>
+            <button
+              onClick={() => setViewMode('map')}
+              className={`flex-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                viewMode === 'map' ? 'bg-blue-500 text-white' : 'bg-white dark:bg-gray-600 text-gray-700 dark:text-gray-200'
+              }`}
+            >
+              <Map className="inline-block mr-1" size={16} />
+              Map
+            </button>
+          </div>
+
           {/* Tabs */}
           <div className="flex border-b border-gray-200 dark:border-gray-700">
             {[
@@ -327,7 +387,7 @@ export default function Home() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as TabMode)}
-                className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${
+                className={`flex-1 px-2 md:px-4 py-3 text-xs md:text-sm font-medium transition-colors ${
                   activeTab === tab.id
                     ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400 bg-blue-50 dark:bg-blue-900/20'
                     : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'
@@ -339,7 +399,7 @@ export default function Home() {
           </div>
 
           {/* Tab Content */}
-          <div className="flex-1 overflow-y-auto">
+          <div className="flex-1 overflow-y-auto overscroll-contain pb-6 lg:pb-0">
             <AnimatePresence mode="wait">
               {activeTab === 'controls' && (
                 <motion.div
@@ -419,14 +479,14 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Resizer */}
+        {/* Resizer - Hidden on mobile */}
         <div
-          className="w-1 bg-gray-300 dark:bg-gray-700 hover:bg-blue-500 dark:hover:bg-blue-400 cursor-col-resize transition-colors"
+          className="hidden lg:block w-1 bg-gray-300 dark:bg-gray-700 hover:bg-blue-500 dark:hover:bg-blue-400 cursor-col-resize transition-colors"
           onMouseDown={handleMouseDown}
         />
 
         {/* Right Panel - Visualization */}
-        <div className="flex-1 relative">
+        <div className="flex-1 relative min-h-[50vh] lg:min-h-0">
           {viewMode === 'canvas' ? (
             <CanvasVisualization
               points={points}

@@ -84,34 +84,34 @@ export const ConvergenceGraph: React.FC<ConvergenceGraphProps> = ({
   };
 
   return (
-    <div className="space-y-4 p-6">
+    <div className="space-y-3 md:space-y-4 p-3 md:p-6">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">Convergence Graph</h3>
+        <h3 className="text-base md:text-lg font-semibold text-gray-800 dark:text-gray-200">Convergence Graph</h3>
         <button
           onClick={exportAsPNG}
-          className="px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors flex items-center gap-2 text-sm"
+          className="px-2 md:px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors flex items-center gap-1 md:gap-2 text-xs md:text-sm touch-manipulation"
         >
           <Download size={16} />
-          Export PNG
+          <span className="hidden sm:inline">Export PNG</span>
         </button>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg">
+      <div className="grid grid-cols-2 gap-2 md:gap-4">
+        <div className="bg-blue-50 dark:bg-blue-900/20 p-2 md:p-3 rounded-lg">
           <div className="text-xs text-gray-600 dark:text-gray-400">Best Fitness</div>
-          <div className="text-xl font-bold text-blue-600 dark:text-blue-400">
+          <div className="text-base md:text-xl font-bold text-blue-600 dark:text-blue-400">
             {bestFitness.toFixed(2)}
           </div>
         </div>
-        <div className="bg-purple-50 dark:bg-purple-900/20 p-3 rounded-lg">
+        <div className="bg-purple-50 dark:bg-purple-900/20 p-2 md:p-3 rounded-lg">
           <div className="text-xs text-gray-600 dark:text-gray-400">Current Iteration</div>
-          <div className="text-xl font-bold text-purple-600 dark:text-purple-400">
+          <div className="text-base md:text-xl font-bold text-purple-600 dark:text-purple-400">
             {currentIteration}
           </div>
         </div>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700" style={{ height: '300px' }}>
+      <div className="bg-white dark:bg-gray-800 p-2 md:p-4 rounded-lg border border-gray-200 dark:border-gray-700" style={{ height: '250px', minHeight: '200px' }}>
         {data.length > 0 ? (
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={data}>
@@ -119,18 +119,21 @@ export const ConvergenceGraph: React.FC<ConvergenceGraphProps> = ({
               <XAxis 
                 dataKey="iteration" 
                 stroke="#6b7280"
-                label={{ value: 'Iteration', position: 'insideBottom', offset: -5 }}
+                label={{ value: 'Iteration', position: 'insideBottom', offset: -5, style: { fontSize: '12px' } }}
+                tick={{ fontSize: 12 }}
               />
               <YAxis 
                 stroke="#6b7280"
-                label={{ value: 'Fitness (Distance)', angle: -90, position: 'insideLeft' }}
+                label={{ value: 'Fitness', angle: -90, position: 'insideLeft', style: { fontSize: '12px' } }}
+                tick={{ fontSize: 12 }}
               />
               <Tooltip 
                 contentStyle={{ 
                   backgroundColor: 'rgba(0, 0, 0, 0.8)', 
                   border: 'none', 
                   borderRadius: '8px',
-                  color: '#fff'
+                  color: '#fff',
+                  fontSize: '12px'
                 }}
               />
               <Line 
@@ -144,7 +147,7 @@ export const ConvergenceGraph: React.FC<ConvergenceGraphProps> = ({
             </LineChart>
           </ResponsiveContainer>
         ) : (
-          <div className="flex items-center justify-center h-full text-gray-500">
+          <div className="flex items-center justify-center h-full text-gray-500 text-xs md:text-sm">
             Start optimization to see convergence
           </div>
         )}

@@ -18,11 +18,19 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+  
+  /* Touch-friendly utilities */
+  .touch-manipulation {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
   }
 }
 
@@ -52,3 +60,91 @@ body {
 .dark ::-webkit-scrollbar-thumb:hover {
   background: #888;
 }
+
+/* Mobile-friendly range inputs */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  background: transparent;
+  cursor: pointer;
+}
+
+/* Webkit (Chrome, Safari, Edge) */
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #3b82f6;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  margin-top: -6px; /* Centers thumb on track */
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 8px;
+  background: #d1d5db;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.dark input[type="range"]::-webkit-slider-runnable-track {
+  background: #4b5563;
+}
+
+/* Firefox */
+input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #3b82f6;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+input[type="range"]::-moz-range-track {
+  width: 100%;
+  height: 8px;
+  background: #d1d5db;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.dark input[type="range"]::-moz-range-track {
+  background: #4b5563;
+}
+
+/* Mobile-specific adjustments */
+@media (max-width: 768px) {
+  input[type="range"]::-webkit-slider-thumb {
+    width: 24px;
+    height: 24px;
+    margin-top: -8px; /* Centers larger thumb on track */
+  }
+  
+  input[type="range"]::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+/* Prevent text selection on touch devices */
+@media (hover: none) {
+  button, .touch-manipulation {
+    user-select: none;
+    -webkit-user-select: none;
+  }
+}
+
+/* Ensure touch targets are at least 44x44px on mobile */
+@media (max-width: 768px) {
+  button, input[type="range"], 
+  input[type="text"], input[type="number"] {
+    min-height: 44px;
+  }
+}
+

@@ -73,32 +73,32 @@ export const StatisticsPanel: React.FC<StatisticsPanelProps> = ({
   ];
 
   return (
-    <div className="space-y-6 p-6">
-      <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">Performance Statistics</h3>
+    <div className="space-y-4 md:space-y-6 p-3 md:p-6">
+      <h3 className="text-base md:text-lg font-semibold text-gray-800 dark:text-gray-200">Performance Statistics</h3>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-2 md:gap-4">
         {stats.map((stat, idx) => (
-          <div key={idx} className={`${stat.bgColor} p-4 rounded-lg`}>
-            <div className="flex items-center gap-2 mb-2">
-              <stat.icon className={stat.color} size={18} />
-              <div className="text-xs text-gray-600 dark:text-gray-400">{stat.label}</div>
+          <div key={idx} className={`${stat.bgColor} p-3 md:p-4 rounded-lg`}>
+            <div className="flex items-center gap-1 md:gap-2 mb-1 md:mb-2">
+              <stat.icon className={stat.color} size={16} />
+              <div className="text-xs md:text-xs text-gray-600 dark:text-gray-400 leading-tight">{stat.label}</div>
             </div>
-            <div className={`text-xl font-bold ${stat.color}`}>
+            <div className={`text-base md:text-xl font-bold ${stat.color}`}>
               {stat.value}
             </div>
           </div>
         ))}
       </div>
 
-      <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
-        <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Best Route Found</div>
+      <div className="bg-gray-50 dark:bg-gray-800 p-3 md:p-4 rounded-lg border border-gray-200 dark:border-gray-700">
+        <div className="text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Best Route Found</div>
         <div className="text-xs font-mono text-gray-600 dark:text-gray-400 break-all">
           {formatRoute(bestRoute)}
         </div>
       </div>
 
-      <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
-        <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Optimization Progress</div>
+      <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 p-3 md:p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+        <div className="text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Optimization Progress</div>
         <div className="text-xs text-gray-600 dark:text-gray-400">
           The PSO algorithm has explored <span className="font-bold">{currentIteration}</span> iterations,
           finding an optimized route with a total distance of <span className="font-bold">{globalBestDistance.toFixed(2)}</span> units.
